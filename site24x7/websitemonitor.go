@@ -20,110 +20,110 @@ func resourceSite24x7WebsiteMonitor() *schema.Resource {
 		Exists: monitorExists,
 
 		Schema: map[string]*schema.Schema{
-			"display_name": &schema.Schema{
+			"display_name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
 
-			"website": &schema.Schema{
+			"website": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
 
-			"check_frequency": &schema.Schema{
+			"check_frequency": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  1,
 			},
 
-			"http_method": &schema.Schema{
+			"http_method": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "G",
 			},
 
-			"auth_user": &schema.Schema{
+			"auth_user": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
 
-			"auth_pass": &schema.Schema{
+			"auth_pass": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
 
-			"matching_keyword_value": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "", // do not auto detect
-			},
-			"matching_keyword_severity": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  2,
-			},
-
-			"unmatching_keyword_value": &schema.Schema{
+			"matching_keyword_value": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "", // do not auto detect
 			},
-			"unmatching_keyword_severity": &schema.Schema{
+			"matching_keyword_severity": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  2,
 			},
 
-			"match_regex_value": &schema.Schema{
+			"unmatching_keyword_value": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "", // do not auto detect
+			},
+			"unmatching_keyword_severity": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  2,
+			},
+
+			"match_regex_value": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"match_regex_severity": &schema.Schema{
+			"match_regex_severity": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  2,
 			},
 
-			"match_case": &schema.Schema{
+			"match_case": {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
 
-			"user_agent": &schema.Schema{
+			"user_agent": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
 
-			"custom_headers": &schema.Schema{
+			"custom_headers": {
 				Type:     schema.TypeMap,
 				Optional: true,
 			},
 
-			"timeout": &schema.Schema{
+			"timeout": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  10,
 			},
 
-			"location_profile_id": &schema.Schema{
+			"location_profile_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
 
-			"notification_profile_id": &schema.Schema{
+			"notification_profile_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
 
-			"threshold_profile_id": &schema.Schema{
+			"threshold_profile_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
 
-			"monitor_groups": &schema.Schema{
+			"monitor_groups": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -131,7 +131,7 @@ func resourceSite24x7WebsiteMonitor() *schema.Resource {
 				Optional: true,
 			},
 
-			"user_group_ids": &schema.Schema{
+			"user_group_ids": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -140,13 +140,13 @@ func resourceSite24x7WebsiteMonitor() *schema.Resource {
 				Computed: true,
 			},
 
-			"actions": &schema.Schema{
+			"actions": {
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem:     schema.TypeString,
 			},
 
-			"use_name_server": &schema.Schema{
+			"use_name_server": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,

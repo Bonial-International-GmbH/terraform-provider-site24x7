@@ -20,58 +20,58 @@ func resourceSite24x7DnsMonitor() *schema.Resource {
 		Exists: monitorExists,
 
 		Schema: map[string]*schema.Schema{
-			"display_name": &schema.Schema{
+			"display_name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
 
-			"dns_host": &schema.Schema{
+			"dns_host": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
 
-			"dns_port": &schema.Schema{
+			"dns_port": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  53,
 			},
 
-			"domain_name": &schema.Schema{
+			"domain_name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
 
-			"check_frequency": &schema.Schema{
+			"check_frequency": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  1,
 			},
 
-			"timeout": &schema.Schema{
+			"timeout": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  10,
 			},
 
-			"location_profile_id": &schema.Schema{
+			"location_profile_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
 
-			"notification_profile_id": &schema.Schema{
+			"notification_profile_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
 
-			"threshold_profile_id": &schema.Schema{
+			"threshold_profile_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
 
-			"user_group_ids": &schema.Schema{
+			"user_group_ids": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -80,7 +80,7 @@ func resourceSite24x7DnsMonitor() *schema.Resource {
 				Computed: true,
 			},
 
-			"monitor_groups": &schema.Schema{
+			"monitor_groups": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -88,7 +88,7 @@ func resourceSite24x7DnsMonitor() *schema.Resource {
 				Optional: true,
 			},
 
-			"actions": &schema.Schema{
+			"actions": {
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem:     schema.TypeString,

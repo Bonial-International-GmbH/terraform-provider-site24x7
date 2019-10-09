@@ -10,7 +10,7 @@ import (
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"authtoken": &schema.Schema{
+			"authtoken": {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("SITE24X7_AUTHTOKEN", nil),
