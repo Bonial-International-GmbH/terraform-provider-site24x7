@@ -19,50 +19,50 @@ func resourceSite24x7Action() *schema.Resource {
 		Exists: actionExists,
 
 		Schema: map[string]*schema.Schema{
-			"custom_parameters": &schema.Schema{
+			"custom_parameters": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"method": &schema.Schema{
+			"method": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "P",
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"requires_authentication": &schema.Schema{
+			"requires_authentication": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  false,
 			},
-			"send_custom_parameters": &schema.Schema{
+			"send_custom_parameters": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  false,
 			},
-			"send_in_json_format": &schema.Schema{
+			"send_in_json_format": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
 			},
-			"send_incident_parameters": &schema.Schema{
+			"send_incident_parameters": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
 			},
-			"timeout": &schema.Schema{
+			"timeout": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  30,
 			},
-			"type": &schema.Schema{
+			"type": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  1,
 			},
-			"url": &schema.Schema{
+			"url": {
 				Type:     schema.TypeString,
 				Required: true,
 			},

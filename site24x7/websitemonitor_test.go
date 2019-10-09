@@ -30,14 +30,14 @@ func TestWebsiteMonitor(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: checkWebsiteMonitorDestroyed,
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: config1,
 				Check: resource.ComposeTestCheckFunc(
 					checkWebsiteMonitorExists,
 				),
 			},
 
-			resource.TestStep{
+			{
 				Config: config2,
 				Check: resource.ComposeTestCheckFunc(
 					checkWebsiteMonitorExists,

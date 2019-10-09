@@ -18,12 +18,12 @@ func resourceSite24x7MonitorGroup() *schema.Resource {
 		Exists: monitorGroupExists,
 
 		Schema: map[string]*schema.Schema{
-			"display_name": &schema.Schema{
+			"display_name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
 
-			"description": &schema.Schema{
+			"description": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
