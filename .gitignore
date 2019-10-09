@@ -1,0 +1,6 @@
+.cover
+.terraform
+/vendor
+coverage.txt
+terraform-provider-site24x7
+terraform.tfstate.backup
