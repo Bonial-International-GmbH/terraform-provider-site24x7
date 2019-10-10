@@ -1,8 +1,7 @@
 package site24x7
 
 import (
-	"net/http"
-
+	site24x7 "github.com/Bonial-International-GmbH/site24x7-go"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
@@ -10,11 +9,23 @@ import (
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"authtoken": {
+			"oauth2_client_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("SITE24X7_AUTHTOKEN", nil),
-				Description: "site24x7 auth Account (https://www.site24x7.com/help/api/#authentication)",
+				DefaultFunc: schema.EnvDefaultFunc("SITE24X7_OAUTH2_CLIENT_ID", nil),
+				Description: "OAuth2 Client ID",
+			},
+			"oauth2_client_secret": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SITE24X7_OAUTH2_CLIENT_SECRET", nil),
+				Description: "OAuth2 Client Secret",
+			},
+			"oauth2_refresh_token": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SITE24X7_OAUTH2_REFRESH_TOKEN", nil),
+				Description: "OAuth2 Refresh Token",
 			},
 		},
 
@@ -30,24 +41,11 @@ func Provider() terraform.ResourceProvider {
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	h := make(http.Header)
-	h.Set("Authorization", "Zoho-authtoken "+d.Get("authtoken").(string))
-	return &http.Client{
-		Transport: &staticHeaderTransport{
-			base:   http.DefaultTransport,
-			header: h,
-		},
-	}, nil
-}
-
-type staticHeaderTransport struct {
-	base   http.RoundTripper
-	header http.Header
-}
-
-func (t *staticHeaderTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	for k, v := range t.header {
-		req.Header[k] = v
+	config := site24x7.Config{
+		ClientID:     d.Get("oauth2_client_id").(string),
+		ClientSecret: d.Get("oauth2_client_secret").(string),
+		RefreshToken: d.Get("oauth2_refresh_token").(string),
 	}
-	return t.base.RoundTrip(req)
+
+	return site24x7.New(config), nil
 }
