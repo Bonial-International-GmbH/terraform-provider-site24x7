@@ -7,6 +7,60 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
+var ActionSchema = map[string]*schema.Schema{
+	"custom_parameters": {
+		Type:     schema.TypeString,
+		Optional: true,
+	},
+	"method": {
+		Type:     schema.TypeString,
+		Optional: true,
+		Default:  "P",
+	},
+	"name": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	// @TODO(mohmann): requires_authentication is no valid field in the
+	// ITAutomations API anymore and is thus ignored. We should remove
+	// it completely from the resource in the future. This is just here
+	// for backwards compatibility.
+	"requires_authentication": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		Default:  false,
+	},
+	"send_custom_parameters": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		Default:  false,
+	},
+	"send_in_json_format": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		Default:  true,
+	},
+	"send_incident_parameters": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		Default:  true,
+	},
+	"timeout": {
+		Type:     schema.TypeInt,
+		Optional: true,
+		Default:  30,
+	},
+	"type": {
+		Type:     schema.TypeInt,
+		Optional: true,
+		Default:  1,
+	},
+	"url": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+}
+
 func resourceSite24x7Action() *schema.Resource {
 	return &schema.Resource{
 		Create: actionCreate,
@@ -15,59 +69,7 @@ func resourceSite24x7Action() *schema.Resource {
 		Delete: actionDelete,
 		Exists: actionExists,
 
-		Schema: map[string]*schema.Schema{
-			"custom_parameters": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"method": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "P",
-			},
-			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			// @TODO(mohmann): requires_authentication is no valid field in the
-			// ITAutomations API anymore and is thus ignored. We should remove
-			// it completely from the resource in the future. This is just here
-			// for backwards compatibility.
-			"requires_authentication": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
-			},
-			"send_custom_parameters": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
-			},
-			"send_in_json_format": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
-			},
-			"send_incident_parameters": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
-			},
-			"timeout": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  30,
-			},
-			"type": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  1,
-			},
-			"url": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-		},
+		Schema: ActionSchema,
 	}
 }
 
