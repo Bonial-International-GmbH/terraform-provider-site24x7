@@ -7,6 +7,18 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
+var MonitorGroupSchema = map[string]*schema.Schema{
+	"display_name": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+
+	"description": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+}
+
 func resourceSite24x7MonitorGroup() *schema.Resource {
 	return &schema.Resource{
 		Create: monitorGroupCreate,
@@ -15,17 +27,7 @@ func resourceSite24x7MonitorGroup() *schema.Resource {
 		Delete: monitorGroupDelete,
 		Exists: monitorGroupExists,
 
-		Schema: map[string]*schema.Schema{
-			"display_name": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-
-			"description": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-		},
+		Schema: MonitorGroupSchema,
 	}
 }
 
