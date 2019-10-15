@@ -22,3 +22,51 @@ func DefaultLocationProfile(client site24x7.Client) (*api.LocationProfile, error
 
 	return profiles[0], nil
 }
+
+// DefaultNotificationProfile fetches the first notification profile returned by the
+// client. If no notification profiles are configured, DefaultNotificationProfile will
+// return an error.
+func DefaultNotificationProfile(client site24x7.Client) (*api.NotificationProfile, error) {
+	profiles, err := client.NotificationProfiles().List()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(profiles) == 0 {
+		return nil, errors.New("no notification profiles configured")
+	}
+
+	return profiles[0], nil
+}
+
+// DefaultThresholdProfile fetches the first threshold profile returned by the
+// client. If no threshold profiles are configured, DefaultThresholdProfile will
+// return an error.
+func DefaultThresholdProfile(client site24x7.Client) (*api.ThresholdProfile, error) {
+	profiles, err := client.ThresholdProfiles().List()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(profiles) == 0 {
+		return nil, errors.New("no threshold profiles configured")
+	}
+
+	return profiles[0], nil
+}
+
+// DefaultUserGroup fetches the first usergroup returned by the
+// client. If no usergroups are configured, DefaultUserGroup will
+// return an error.
+func DefaultUserGroup(client site24x7.Client) (*api.UserGroup, error) {
+	userGroups, err := client.UserGroups().List()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(userGroups) == 0 {
+		return nil, errors.New("no usergroups configured")
+	}
+
+	return userGroups[0], nil
+}
