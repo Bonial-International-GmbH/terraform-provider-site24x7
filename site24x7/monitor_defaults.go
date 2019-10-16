@@ -55,8 +55,8 @@ func DefaultThresholdProfile(client site24x7.Client) (*api.ThresholdProfile, err
 	return profiles[0], nil
 }
 
-// DefaultUserGroup fetches the first usergroup returned by the
-// client. If no usergroups are configured, DefaultUserGroup will
+// DefaultUserGroup fetches the first user group returned by the
+// client. If no user groups are configured, DefaultUserGroup will
 // return an error.
 func DefaultUserGroup(client site24x7.Client) (*api.UserGroup, error) {
 	userGroups, err := client.UserGroups().List()
@@ -65,7 +65,7 @@ func DefaultUserGroup(client site24x7.Client) (*api.UserGroup, error) {
 	}
 
 	if len(userGroups) == 0 {
-		return nil, errors.New("no usergroups configured")
+		return nil, errors.New("no user groups configured")
 	}
 
 	return userGroups[0], nil
