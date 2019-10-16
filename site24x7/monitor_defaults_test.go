@@ -101,7 +101,7 @@ func TestDefaultUserGroup(t *testing.T) {
 
 	_, err = DefaultUserGroup(client)
 
-	require.Equal(t, errors.New("no usergroups configured"), err)
+	require.Equal(t, errors.New("no user groups configured"), err)
 
 	client.FakeUserGroups.On("List").Return([]*api.UserGroup{
 		{UserGroupID: "456"},
