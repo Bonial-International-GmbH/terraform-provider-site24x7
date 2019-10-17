@@ -1,73 +1,55 @@
+// TODO
+// This is work in progress and have to be completed
+
 package site24x7
 
 import (
-	"fmt"
-	"net/http"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/Bonial-International-GmbH/site24x7-go/fake"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/stretchr/testify/require"
 )
 
-func TestWebsiteMonitor(t *testing.T) {
-	const config1 = `
-    resource "site24x7_website_monitor" "test" {
-      display_name = "test"
-      website = "https://www.sourcegraph.com"
-    }
-  `
+func TestWebsiteMonitorDelete(t *testing.T) {
+	d := monitorTestResourceData(t)
+	d.SetId("123")
 
-	const config2 = `
-    resource "site24x7_website_monitor" "test" {
-      display_name = "new name"
-      website = "https://www.sourcegraph.com/login"
-      custom_headers { "foo" = "bar" }
-    }
-  `
+	c := fake.NewClient()
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: checkWebsiteMonitorDestroyed,
-		Steps: []resource.TestStep{
-			{
-				Config: config1,
-				Check: resource.ComposeTestCheckFunc(
-					checkWebsiteMonitorExists,
-				),
-			},
+	c.FakeMonitors.On("Delete", "123").Return(nil).Once()
 
-			{
-				Config: config2,
-				Check: resource.ComposeTestCheckFunc(
-					checkWebsiteMonitorExists,
-					resource.TestCheckResourceAttr("site24x7_website_monitor.test", "display_name", "new name"),
-				),
-			},
+	require.NoError(t, monitorDelete(d, c))
+}
+
+func monitorTestResourceData(t *testing.T) *schema.ResourceData {
+	//return schema.TestResourceDataRaw(t, MonitorSchema, map[string]interface{}{
+	return schema.TestResourceDataRaw(t, nil, map[string]interface{}{
+		"DisplayNmae":    "foo",
+		"Type":           "URL",
+		"Website":        "www.test.tld",
+		"CheckFrequency": "60",
+		"HTTPMethod":     "P",
+		"AuthUser":       "username",
+		"AuthPass":       "password",
+		"MatchCase":      true,
+		"UserAgent":      "firefox",
+		"CustomHeaders": map[string]string{
+			"Name":  "Accept-Encoding",
+			"Value": "gzip",
 		},
+		"Timeout":               120,
+		"LocationProfileID":     "456",
+		"NotificationProfileID": "789",
+		"ThresholdProfileID":    "012",
+		"MonitorGroups": []string{
+			"234",
+			"567",
+		},
+		"UserGroupIDs": []string{
+			"123",
+			"456",
+		},
+		"UseNameServer": true,
 	})
-}
-
-func checkWebsiteMonitorExists(s *terraform.State) error {
-	rs := s.RootModule().Resources["site24x7_website_monitor.test"]
-	exists, err := fetchWebsiteMonitorExists(testAccProvider.Meta().(*http.Client), rs.Primary.ID)
-	if err != nil {
-		return err
-	}
-	if !exists {
-		return fmt.Errorf("monitor not found")
-	}
-	return nil
-}
-
-func checkWebsiteMonitorDestroyed(s *terraform.State) error {
-	rs := s.RootModule().Resources["site24x7_website_monitor.test"]
-	exists, err := fetchWebsiteMonitorExists(testAccProvider.Meta().(*http.Client), rs.Primary.ID)
-	if err != nil {
-		return err
-	}
-	if exists {
-		return fmt.Errorf("monitor still exists")
-	}
-	return nil
 }
