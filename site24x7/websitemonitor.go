@@ -312,6 +312,9 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData) (*api.Monitor, error) 
 func updateWebsiteMonitorResourceData(d *schema.ResourceData, monitor *api.Monitor) {
 	d.Set("display_name", monitor.DisplayName)
 	d.Set("type", monitor.Type)
+	d.Set("website", monitor.Website)
+	d.Set("check_frequency", monitor.CheckFrequency)
+	d.Set("http_method", monitor.HTTPMethod)
 	d.Set("auth_user", monitor.AuthUser)
 	d.Set("auth_pass", monitor.AuthPass)
 	if monitor.MatchingKeyword != nil {
