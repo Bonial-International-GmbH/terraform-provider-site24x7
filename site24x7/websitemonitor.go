@@ -10,7 +10,6 @@ import (
 )
 
 var WebsiteMonitorSchema = map[string]*schema.Schema{
-
 	"display_name": {
 		Type:     schema.TypeString,
 		Required: true,
@@ -145,6 +144,42 @@ func websiteMonitorCreate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
+	websiteMonitor, err = client.Monitors().Create(websiteMonitor)
+	if err != nil {
+		return err
+	}
+
+	d.SetId(websiteMonitor.MonitorID)
+
+	return nil
+}
+
+func websiteMonitorRead(d *schema.ResourceData, meta interface{}) error {
+	client := meta.(site24x7.Client)
+
+	websiteMonitor, err := client.Monitors().Get(d.Id())
+	if err != nil {
+		return err
+	}
+
+	updateWebsiteMonitorResourceData(d, websiteMonitor)
+
+	return nil
+}
+
+func websiteMonitorUpdate(d *schema.ResourceData, meta interface{}) error {
+	client := meta.(site24x7.Client)
+
+	websiteMonitor, err := resourceDataToWebsiteMonitor(d)
+	if err != nil {
+		return err
+	}
+
+	websiteMonitor, err = client.Monitors().Update(websiteMonitor)
+	if err != nil {
+		return err
+	}
+
 	if _, ok := d.GetOk("match_regex_value"); ok {
 		websiteMonitor.MatchRegex.Value = d.Get("match_regex_value").(string)
 		websiteMonitor.MatchRegex.Severity = api.Status(d.Get("match_regex_severity").(int))
@@ -194,42 +229,6 @@ func websiteMonitorCreate(d *schema.ResourceData, meta interface{}) error {
 		}
 		websiteMonitor.UserGroupIDs = []string{userGroup.UserGroupID}
 		d.Set("user_group_ids", []string{userGroup.UserGroupID})
-	}
-
-	websiteMonitor, err = client.Monitors().Create(websiteMonitor)
-	if err != nil {
-		return err
-	}
-
-	d.SetId(websiteMonitor.MonitorID)
-
-	return nil
-}
-
-func websiteMonitorRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(site24x7.Client)
-
-	websiteMonitor, err := client.Monitors().Get(d.Id())
-	if err != nil {
-		return err
-	}
-
-	updateWebsiteMonitorResourceData(d, websiteMonitor)
-
-	return nil
-}
-
-func websiteMonitorUpdate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(site24x7.Client)
-
-	websiteMonitor, err := resourceDataToWebsiteMonitor(d)
-	if err != nil {
-		return err
-	}
-
-	websiteMonitor, err = client.Monitors().Update(websiteMonitor)
-	if err != nil {
-		return err
 	}
 
 	d.SetId(websiteMonitor.MonitorID)
