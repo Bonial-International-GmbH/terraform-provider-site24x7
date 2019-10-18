@@ -139,7 +139,7 @@ func resourceSite24x7WebsiteMonitor() *schema.Resource {
 func websiteMonitorCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(site24x7.Client)
 
-	websiteMonitor, err := resourceDataToWebsiteMonitor(d)
+	websiteMonitor, err := resourceDataToWebsiteMonitor(d, client)
 	if err != nil {
 		return err
 	}
@@ -170,7 +170,7 @@ func websiteMonitorRead(d *schema.ResourceData, meta interface{}) error {
 func websiteMonitorUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(site24x7.Client)
 
-	websiteMonitor, err := resourceDataToWebsiteMonitor(d)
+	websiteMonitor, err := resourceDataToWebsiteMonitor(d, client)
 	if err != nil {
 		return err
 	}
@@ -178,57 +178,6 @@ func websiteMonitorUpdate(d *schema.ResourceData, meta interface{}) error {
 	websiteMonitor, err = client.Monitors().Update(websiteMonitor)
 	if err != nil {
 		return err
-	}
-
-	if _, ok := d.GetOk("match_regex_value"); ok {
-		websiteMonitor.MatchRegex.Value = d.Get("match_regex_value").(string)
-		websiteMonitor.MatchRegex.Severity = api.Status(d.Get("match_regex_severity").(int))
-	}
-
-	if _, ok := d.GetOk("unmatching_keyword_value"); ok {
-		websiteMonitor.UnmatchingKeyword.Value = d.Get("unmatching_keyword_value").(string)
-		websiteMonitor.UnmatchingKeyword.Severity = api.Status(d.Get("unmatching_keyword_severity").(int))
-	}
-
-	if _, ok := d.GetOk("matching_keyword_value"); ok {
-		websiteMonitor.MatchingKeyword.Value = d.Get("matching_keyword_value").(string)
-		websiteMonitor.MatchingKeyword.Severity = api.Status(d.Get("matching_keyword_severity").(int))
-	}
-
-	if websiteMonitor.LocationProfileID == "" {
-		profile, err := DefaultLocationProfile(client)
-		if err != nil {
-			return err
-		}
-		websiteMonitor.LocationProfileID = profile.ProfileID
-		d.Set("location_profile_id", profile.ProfileID)
-	}
-
-	if websiteMonitor.NotificationProfileID == "" {
-		profile, err := DefaultNotificationProfile(client)
-		if err != nil {
-			return err
-		}
-		websiteMonitor.NotificationProfileID = profile.ProfileID
-		d.Set("notification_profile_id", profile.ProfileID)
-	}
-
-	if websiteMonitor.ThresholdProfileID == "" {
-		profile, err := DefaultThresholdProfile(client)
-		if err != nil {
-			return err
-		}
-		websiteMonitor.ThresholdProfileID = profile.ProfileID
-		d.Set("threshold_profile_id", profile)
-	}
-
-	if len(websiteMonitor.UserGroupIDs) == 0 {
-		userGroup, err := DefaultUserGroup(client)
-		if err != nil {
-			return err
-		}
-		websiteMonitor.UserGroupIDs = []string{userGroup.UserGroupID}
-		d.Set("user_group_ids", []string{userGroup.UserGroupID})
 	}
 
 	d.SetId(websiteMonitor.MonitorID)
@@ -257,7 +206,8 @@ func websiteMonitorExists(d *schema.ResourceData, meta interface{}) (bool, error
 	return true, nil
 }
 
-func resourceDataToWebsiteMonitor(d *schema.ResourceData) (*api.Monitor, error) {
+func resourceDataToWebsiteMonitor(d *schema.ResourceData, meta interface{}) (*api.Monitor, error) {
+	client := meta.(site24x7.Client)
 	customHeaders := []api.Header{}
 	for k, v := range d.Get("custom_headers").(map[string]interface{}) {
 		customHeaders = append(customHeaders, api.Header{Name: k, Value: v.(string)})
@@ -285,7 +235,7 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData) (*api.Monitor, error) 
 		i++
 	}
 
-	return &api.Monitor{
+	websiteMonitor := &api.Monitor{
 		MonitorID:             d.Id(),
 		DisplayName:           d.Get("display_name").(string),
 		Type:                  "URL",
@@ -305,7 +255,60 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData) (*api.Monitor, error) 
 		UserGroupIDs:          userGroupIDs,
 		ActionIDs:             actionRefs,
 		UseNameServer:         d.Get("use_name_server").(bool),
-	}, nil
+	}
+
+	if _, ok := d.GetOk("match_regex_value"); ok {
+		websiteMonitor.MatchRegex.Value = d.Get("match_regex_value").(string)
+		websiteMonitor.MatchRegex.Severity = api.Status(d.Get("match_regex_severity").(int))
+	}
+
+	if _, ok := d.GetOk("unmatching_keyword_value"); ok {
+		websiteMonitor.UnmatchingKeyword.Value = d.Get("unmatching_keyword_value").(string)
+		websiteMonitor.UnmatchingKeyword.Severity = api.Status(d.Get("unmatching_keyword_severity").(int))
+	}
+
+	if _, ok := d.GetOk("matching_keyword_value"); ok {
+		websiteMonitor.MatchingKeyword.Value = d.Get("matching_keyword_value").(string)
+		websiteMonitor.MatchingKeyword.Severity = api.Status(d.Get("matching_keyword_severity").(int))
+	}
+
+	if websiteMonitor.LocationProfileID == "" {
+		profile, err := DefaultLocationProfile(client)
+		if err != nil {
+			return nil, err
+		}
+		websiteMonitor.LocationProfileID = profile.ProfileID
+		d.Set("location_profile_id", profile.ProfileID)
+	}
+
+	if websiteMonitor.NotificationProfileID == "" {
+		profile, err := DefaultNotificationProfile(client)
+		if err != nil {
+			return nil, err
+		}
+		websiteMonitor.NotificationProfileID = profile.ProfileID
+		d.Set("notification_profile_id", profile.ProfileID)
+	}
+
+	if websiteMonitor.ThresholdProfileID == "" {
+		profile, err := DefaultThresholdProfile(client)
+		if err != nil {
+			return nil, err
+		}
+		websiteMonitor.ThresholdProfileID = profile.ProfileID
+		d.Set("threshold_profile_id", profile)
+	}
+
+	if len(websiteMonitor.UserGroupIDs) == 0 {
+		userGroup, err := DefaultUserGroup(client)
+		if err != nil {
+			return nil, err
+		}
+		websiteMonitor.UserGroupIDs = []string{userGroup.UserGroupID}
+		d.Set("user_group_ids", []string{userGroup.UserGroupID})
+	}
+
+	return websiteMonitor, nil
 }
 
 func updateWebsiteMonitorResourceData(d *schema.ResourceData, monitor *api.Monitor) {
