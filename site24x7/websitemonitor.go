@@ -15,34 +15,28 @@ var WebsiteMonitorSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 	},
-
 	"website": {
 		Type:     schema.TypeString,
 		Required: true,
 	},
-
 	"check_frequency": {
 		Type:     schema.TypeInt,
 		Optional: true,
 		Default:  1,
 	},
-
 	"http_method": {
 		Type:     schema.TypeString,
 		Optional: true,
 		Default:  "G",
 	},
-
 	"auth_user": {
 		Type:     schema.TypeString,
 		Optional: true,
 	},
-
 	"auth_pass": {
 		Type:     schema.TypeString,
 		Optional: true,
 	},
-
 	"matching_keyword_value": {
 		Type:     schema.TypeString,
 		Optional: true,
@@ -53,7 +47,6 @@ var WebsiteMonitorSchema = map[string]*schema.Schema{
 		Optional: true,
 		Default:  2,
 	},
-
 	"unmatching_keyword_value": {
 		Type:     schema.TypeString,
 		Optional: true,
@@ -64,57 +57,47 @@ var WebsiteMonitorSchema = map[string]*schema.Schema{
 		Optional: true,
 		Default:  2,
 	},
-
 	"match_regex_value": {
 		Type:     schema.TypeString,
 		Optional: true,
 	},
-
 	"match_regex_severity": {
 		Type:     schema.TypeInt,
 		Optional: true,
 		Default:  2,
 	},
-
 	"match_case": {
 		Type:     schema.TypeBool,
 		Optional: true,
 	},
-
 	"user_agent": {
 		Type:     schema.TypeString,
 		Optional: true,
 	},
-
 	"custom_headers": {
 		Type:     schema.TypeMap,
 		Optional: true,
 	},
-
 	"timeout": {
 		Type:     schema.TypeInt,
 		Optional: true,
 		Default:  10,
 	},
-
 	"location_profile_id": {
 		Type:     schema.TypeString,
 		Optional: true,
 		Computed: true,
 	},
-
 	"notification_profile_id": {
 		Type:     schema.TypeString,
 		Optional: true,
 		Computed: true,
 	},
-
 	"threshold_profile_id": {
 		Type:     schema.TypeString,
 		Optional: true,
 		Computed: true,
 	},
-
 	"monitor_groups": {
 		Type: schema.TypeList,
 		Elem: &schema.Schema{
@@ -122,7 +105,6 @@ var WebsiteMonitorSchema = map[string]*schema.Schema{
 		},
 		Optional: true,
 	},
-
 	"user_group_ids": {
 		Type: schema.TypeList,
 		Elem: &schema.Schema{
@@ -131,13 +113,11 @@ var WebsiteMonitorSchema = map[string]*schema.Schema{
 		Optional: true,
 		Computed: true,
 	},
-
 	"actions": {
 		Type:     schema.TypeMap,
 		Optional: true,
 		Elem:     schema.TypeString,
 	},
-
 	"use_name_server": {
 		Type:     schema.TypeBool,
 		Optional: true,
@@ -160,9 +140,63 @@ func resourceSite24x7WebsiteMonitor() *schema.Resource {
 func websiteMonitorCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(site24x7.Client)
 
-	websiteMonitor := resourceDataToWebsiteMonitor(d)
+	websiteMonitor, err := resourceDataToWebsiteMonitor(d)
+	if err != nil {
+		return err
+	}
 
-	websiteMonitor, err := client.Monitors().Create(websiteMonitor)
+	if _, ok := d.GetOk("match_regex_value"); ok {
+		websiteMonitor.MatchRegex.Value = d.Get("match_regex_value").(string)
+		websiteMonitor.MatchRegex.Severity = api.Status(d.Get("match_regex_severity").(int))
+	}
+
+	if _, ok := d.GetOk("unmatching_keyword_value"); ok {
+		websiteMonitor.UnmatchingKeyword.Value = d.Get("unmatching_keyword_value").(string)
+		websiteMonitor.UnmatchingKeyword.Severity = api.Status(d.Get("unmatching_keyword_severity").(int))
+	}
+
+	if _, ok := d.GetOk("matching_keyword_value"); ok {
+		websiteMonitor.MatchingKeyword.Value = d.Get("matching_keyword_value").(string)
+		websiteMonitor.MatchingKeyword.Severity = api.Status(d.Get("matching_keyword_severity").(int))
+	}
+
+	if websiteMonitor.LocationProfileID == "" {
+		profile, err := DefaultLocationProfile(client)
+		if err != nil {
+			return err
+		}
+		websiteMonitor.LocationProfileID = profile.ProfileID
+		d.Set("location_profile_id", profile.ProfileID)
+	}
+
+	if websiteMonitor.NotificationProfileID == "" {
+		profile, err := DefaultNotificationProfile(client)
+		if err != nil {
+			return err
+		}
+		websiteMonitor.NotificationProfileID = profile.ProfileID
+		d.Set("notification_profile_id", profile.ProfileID)
+	}
+
+	if websiteMonitor.ThresholdProfileID == "" {
+		profile, err := DefaultThresholdProfile(client)
+		if err != nil {
+			return err
+		}
+		websiteMonitor.ThresholdProfileID = profile.ProfileID
+		d.Set("threshold_profile_id", profile)
+	}
+
+	if len(websiteMonitor.UserGroupIDs) == 0 {
+		userGroup, err := DefaultUserGroup(client)
+		if err != nil {
+			return err
+		}
+		websiteMonitor.UserGroupIDs = []string{userGroup.UserGroupID}
+		d.Set("user_group_ids", []string{userGroup.UserGroupID})
+	}
+
+	websiteMonitor, err = client.Monitors().Create(websiteMonitor)
 	if err != nil {
 		return err
 	}
@@ -188,9 +222,12 @@ func websiteMonitorRead(d *schema.ResourceData, meta interface{}) error {
 func websiteMonitorUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(site24x7.Client)
 
-	websiteMonitor := resourceDataToWebsiteMonitor(d)
+	websiteMonitor, err := resourceDataToWebsiteMonitor(d)
+	if err != nil {
+		return err
+	}
 
-	websiteMonitor, err := client.Monitors().Update(websiteMonitor)
+	websiteMonitor, err = client.Monitors().Update(websiteMonitor)
 	if err != nil {
 		return err
 	}
@@ -221,7 +258,7 @@ func websiteMonitorExists(d *schema.ResourceData, meta interface{}) (bool, error
 	return true, nil
 }
 
-func resourceDataToWebsiteMonitor(d *schema.ResourceData) *api.Monitor {
+func resourceDataToWebsiteMonitor(d *schema.ResourceData) (*api.Monitor, error) {
 	customHeaders := []api.Header{}
 	for k, v := range d.Get("custom_headers").(map[string]interface{}) {
 		customHeaders = append(customHeaders, api.Header{Name: k, Value: v.(string)})
@@ -242,7 +279,7 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData) *api.Monitor {
 	for k, v := range d.Get("action_ids").(map[string]interface{}) {
 		tmp, err := strconv.Atoi(k)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 		alertType := api.Status(tmp)
 		actionRefs[i] = api.ActionRef{ActionID: v.(string), AlertType: alertType}
@@ -258,29 +295,23 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData) *api.Monitor {
 		HTTPMethod:            d.Get("http_method").(string),
 		AuthUser:              d.Get("auth_user").(string),
 		AuthPass:              d.Get("auth_pass").(string),
-		MatchingKeyword:       new(api.ValueAndSeverity),
-		UnmatchingKeyword:     new(api.ValueAndSeverity),
-		MatchRegex:            new(api.ValueAndSeverity),
 		MatchCase:             d.Get("match_case").(bool),
 		UserAgent:             d.Get("user_agent").(string),
 		CustomHeaders:         customHeaders,
 		Timeout:               d.Get("timeout").(int),
 		LocationProfileID:     d.Get("location_profile_id").(string),
-		NotificationProfileID: d.Get("NotificationProfileID").(string),
-		ThresholdProfileID:    d.Get("ThresholdProfileID").(string),
+		NotificationProfileID: d.Get("notification_profile_id").(string),
+		ThresholdProfileID:    d.Get("threshold_profile_id").(string),
 		MonitorGroups:         monitorGroups,
 		UserGroupIDs:          userGroupIDs,
 		ActionIDs:             actionRefs,
 		UseNameServer:         d.Get("use_name_server").(bool),
-	}
+	}, nil
 }
 
 func updateWebsiteMonitorResourceData(d *schema.ResourceData, monitor *api.Monitor) {
 	d.Set("display_name", monitor.DisplayName)
 	d.Set("type", monitor.Type)
-	d.Set("website", monitor.Website)
-	d.Set("check_frequency", monitor.CheckFrequency)
-	d.Set("http_method", monitor.HTTPMethod)
 	d.Set("auth_user", monitor.AuthUser)
 	d.Set("auth_pass", monitor.AuthPass)
 	if monitor.MatchingKeyword != nil {
