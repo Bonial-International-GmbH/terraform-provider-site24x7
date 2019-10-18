@@ -206,8 +206,7 @@ func websiteMonitorExists(d *schema.ResourceData, meta interface{}) (bool, error
 	return true, nil
 }
 
-func resourceDataToWebsiteMonitor(d *schema.ResourceData, meta interface{}) (*api.Monitor, error) {
-	client := meta.(site24x7.Client)
+func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client) (*api.Monitor, error) {
 	customHeaders := []api.Header{}
 	for k, v := range d.Get("custom_headers").(map[string]interface{}) {
 		customHeaders = append(customHeaders, api.Header{Name: k, Value: v.(string)})
