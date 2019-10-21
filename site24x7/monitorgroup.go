@@ -12,7 +12,6 @@ var MonitorGroupSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 	},
-
 	"description": {
 		Type:     schema.TypeString,
 		Required: true,
