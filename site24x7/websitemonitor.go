@@ -209,7 +209,7 @@ func websiteMonitorExists(d *schema.ResourceData, meta interface{}) (bool, error
 }
 
 func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client) (*api.Monitor, error) {
-	customHeaders := []api.Header{}
+	var customHeaders []api.Header
 	customHeaderMap := d.Get("custom_headers").(map[string]interface{})
 
 	keys := make([]string, 0, len(customHeaderMap))
@@ -233,7 +233,7 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client
 		monitorGroups = append(monitorGroups, group.(string))
 	}
 
-	actionRefs := []api.ActionRef{}
+	var actionRefs []api.ActionRef
 	actionMap := d.Get("actions").(map[string]interface{})
 
 	keys = make([]string, 0, len(actionMap))
@@ -278,18 +278,24 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client
 	}
 
 	if _, ok := d.GetOk("match_regex_value"); ok {
-		websiteMonitor.MatchRegex.Value = d.Get("match_regex_value").(string)
-		websiteMonitor.MatchRegex.Severity = api.Status(d.Get("match_regex_severity").(int))
+		websiteMonitor.MatchRegex = &api.ValueAndSeverity{
+			Value:    d.Get("match_regex_value").(string),
+			Severity: api.Status(d.Get("match_regex_severity").(int)),
+		}
 	}
 
 	if _, ok := d.GetOk("unmatching_keyword_value"); ok {
-		websiteMonitor.UnmatchingKeyword.Value = d.Get("unmatching_keyword_value").(string)
-		websiteMonitor.UnmatchingKeyword.Severity = api.Status(d.Get("unmatching_keyword_severity").(int))
+		websiteMonitor.UnmatchingKeyword = &api.ValueAndSeverity{
+			Value:    d.Get("unmatching_keyword_value").(string),
+			Severity: api.Status(d.Get("unmatching_keyword_severity").(int)),
+		}
 	}
 
 	if _, ok := d.GetOk("matching_keyword_value"); ok {
-		websiteMonitor.MatchingKeyword.Value = d.Get("matching_keyword_value").(string)
-		websiteMonitor.MatchingKeyword.Severity = api.Status(d.Get("matching_keyword_severity").(int))
+		websiteMonitor.MatchingKeyword = &api.ValueAndSeverity{
+			Value:    d.Get("matching_keyword_value").(string),
+			Severity: api.Status(d.Get("matching_keyword_severity").(int)),
+		}
 	}
 
 	if websiteMonitor.LocationProfileID == "" {
