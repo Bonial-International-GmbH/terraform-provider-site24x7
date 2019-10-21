@@ -16,12 +16,9 @@ func TestWebsiteMonitorCreate(t *testing.T) {
 
 	c := fake.NewClient()
 
-	// TODO switch monitorType
-	monitorType := "URL"
-
 	a := &api.Monitor{
 		DisplayName:    "foo",
-		Type:           monitorType,
+		Type:           "URL",
 		Website:        "www.test.tld",
 		CheckFrequency: "60",
 		HTTPMethod:     "P",
@@ -29,29 +26,39 @@ func TestWebsiteMonitorCreate(t *testing.T) {
 		AuthPass:       "password",
 		MatchCase:      true,
 		UserAgent:      "firefox",
-		CustomHeaders: [{
-			"name":  "Header Name",
-			"value": "testheader",
+		CustomHeaders: []api.Header{
+			{
+				Name:  "Header Name",
+				Value: "testheader",
+			},
+			{
+				Name:  "cache",
+				Value: "nocache",
+			},
 		},
-		{
-			"name": "cache",
-			"value": "nocache",
-		}
-		],
 		Timeout:               120,
 		LocationProfileID:     "456",
 		NotificationProfileID: "789",
 		ThresholdProfileID:    "012",
-		//		MonitorGroups: []string{
-		//			"234",
-		//			"567",
-		//		},
-		//		UserGroupIDs: []string{
-		//			"123",
-		//			"456",
-		//		},
+		MonitorGroups: []string{
+			"234",
+			"567",
+		},
+		UserGroupIDs: []string{
+			"123",
+			"456",
+		},
 		UseNameServer: true,
-		//	ActionIDs:     []api.ActionRef{},
+		ActionIDs: []api.ActionRef{
+			{
+				ActionID:  "123action",
+				AlertType: 1,
+			},
+			{
+				ActionID:  "234action",
+				AlertType: 5,
+			},
+		},
 	}
 
 	c.FakeMonitors.On("Create", a).Return(a, nil).Once()
@@ -61,6 +68,69 @@ func TestWebsiteMonitorCreate(t *testing.T) {
 	c.FakeMonitors.On("Create", a).Return(a, apierrors.NewStatusError(500, "error")).Once()
 
 	err := websiteMonitorCreate(d, c)
+
+	assert.Equal(t, apierrors.NewStatusError(500, "error"), err)
+}
+
+func TestWebsiteMonitorUpdate(t *testing.T) {
+	d := monitorTestResourceData(t)
+	d.SetId("123")
+
+	c := fake.NewClient()
+
+	a := &api.Monitor{
+		MonitorID:      "123",
+		DisplayName:    "foo",
+		Type:           "URL",
+		Website:        "www.test.tld",
+		CheckFrequency: "60",
+		HTTPMethod:     "P",
+		AuthUser:       "username",
+		AuthPass:       "password",
+		MatchCase:      true,
+		UserAgent:      "firefox",
+		CustomHeaders: []api.Header{
+			{
+				Name:  "Header Name",
+				Value: "testheader",
+			},
+			{
+				Name:  "cache",
+				Value: "nocache",
+			},
+		},
+		Timeout:               120,
+		LocationProfileID:     "456",
+		NotificationProfileID: "789",
+		ThresholdProfileID:    "012",
+		MonitorGroups: []string{
+			"234",
+			"567",
+		},
+		UserGroupIDs: []string{
+			"123",
+			"456",
+		},
+		UseNameServer: true,
+		ActionIDs: []api.ActionRef{
+			{
+				ActionID:  "123action",
+				AlertType: 1,
+			},
+			{
+				ActionID:  "234action",
+				AlertType: 5,
+			},
+		},
+	}
+
+	c.FakeMonitors.On("Update", a).Return(a, nil).Once()
+
+	require.NoError(t, websiteMonitorUpdate(d, c))
+
+	c.FakeMonitors.On("Update", a).Return(a, apierrors.NewStatusError(500, "error")).Once()
+
+	err := websiteMonitorUpdate(d, c)
 
 	assert.Equal(t, apierrors.NewStatusError(500, "error"), err)
 }
@@ -133,25 +203,25 @@ func monitorTestResourceData(t *testing.T) *schema.ResourceData {
 		"match_case":      true,
 		"user_agent":      "firefox",
 		"custom_headers": map[string]interface{}{
-			"name":  "Accept-Encoding",
-			"value": "gzip",
+			"Header Name": "testheader",
+			"cache":       "nocache",
 		},
 		"timeout":                 120,
 		"location_profile_id":     "456",
 		"notification_profile_id": "789",
 		"threshold_profile_id":    "012",
-		"monitor_groups": []string{
+		"monitor_groups": []interface{}{
 			"234",
 			"567",
 		},
-		"user_group_ids": []string{
+		"user_group_ids": []interface{}{
 			"123",
 			"456",
 		},
 		"use_name_server": true,
-		"action_ids": map[string]interface{}{
-			"action_id":  "123",
-			"alert_type": "5",
+		"actions": map[string]interface{}{
+			"1": "123action",
+			"5": "234action",
 		},
 	})
 }

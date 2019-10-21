@@ -1,6 +1,8 @@
 package site24x7
 
 import (
+	"fmt"
+	"sort"
 	"strconv"
 
 	site24x7 "github.com/Bonial-International-GmbH/site24x7-go"
@@ -208,8 +210,17 @@ func websiteMonitorExists(d *schema.ResourceData, meta interface{}) (bool, error
 
 func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client) (*api.Monitor, error) {
 	customHeaders := []api.Header{}
-	for k, v := range d.Get("custom_headers").(map[string]interface{}) {
-		customHeaders = append(customHeaders, api.Header{Name: k, Value: v.(string)})
+	customHeaderMap := d.Get("custom_headers").(map[string]interface{})
+
+	keys := make([]string, 0, len(customHeaderMap))
+	for k := range customHeaderMap {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		customHeaders = append(customHeaders, api.Header{Name: k, Value: customHeaderMap[k].(string)})
 	}
 
 	var userGroupIDs []string
@@ -222,16 +233,26 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client
 		monitorGroups = append(monitorGroups, group.(string))
 	}
 
-	i := 0
-	actionRefs := make([]api.ActionRef, len(d.Get("action_ids").(map[string]interface{})))
-	for k, v := range d.Get("action_ids").(map[string]interface{}) {
+	actionRefs := []api.ActionRef{}
+	actionMap := d.Get("actions").(map[string]interface{})
+
+	keys = make([]string, 0, len(actionMap))
+	for k := range actionMap {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+
+	for _, k := range keys {
 		tmp, err := strconv.Atoi(k)
 		if err != nil {
 			return nil, err
 		}
+
 		alertType := api.Status(tmp)
-		actionRefs[i] = api.ActionRef{ActionID: v.(string), AlertType: alertType}
-		i++
+		actionRef := api.ActionRef{ActionID: actionMap[k].(string), AlertType: alertType}
+
+		actionRefs = append(actionRefs, actionRef)
 	}
 
 	websiteMonitor := &api.Monitor{
@@ -332,13 +353,28 @@ func updateWebsiteMonitorResourceData(d *schema.ResourceData, monitor *api.Monit
 	}
 	d.Set("match_case", monitor.MatchCase)
 	d.Set("user_agent", monitor.UserAgent)
-	d.Set("custom_headers", monitor.CustomHeaders)
+
+	customHeaders := make(map[string]interface{})
+	for _, h := range monitor.CustomHeaders {
+		if h.Name == "" {
+			continue
+		}
+		customHeaders[h.Name] = h.Value
+	}
+
+	d.Set("custom_headers", customHeaders)
 	d.Set("timeout", monitor.Timeout)
 	d.Set("location_profile_id", monitor.LocationProfileID)
 	d.Set("notification_profile_id", monitor.NotificationProfileID)
 	d.Set("threshold_profile_id", monitor.ThresholdProfileID)
 	d.Set("monitor_groups", monitor.MonitorGroups)
 	d.Set("user_group_ids", monitor.UserGroupIDs)
-	d.Set("action_ids", monitor.ActionIDs)
+
+	actions := make(map[string]interface{})
+	for _, action := range monitor.ActionIDs {
+		actions[fmt.Sprintf("%d", action.AlertType)] = action.ActionID
+	}
+
+	d.Set("actions", actions)
 	d.Set("use_name_server", monitor.UseNameServer)
 }
