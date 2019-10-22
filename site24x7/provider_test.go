@@ -1,7 +1,6 @@
 package site24x7
 
 import (
-	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -26,10 +25,4 @@ func TestProvider(t *testing.T) {
 
 func TestProvider_impl(t *testing.T) {
 	var _ terraform.ResourceProvider = Provider()
-}
-
-func testAccPreCheck(t *testing.T) {
-	if v := os.Getenv("ZOHO_AUTHTOKEN"); v == "" {
-		t.Fatal("ZOHO_AUTHTOKEN must be set for acceptance tests")
-	}
 }

@@ -1,0 +1,36 @@
+---
+project_name: terraform-provider-site24x7
+builds:
+  - main: ./main.go
+    binary: terraform-provider-site24x7
+    ldflags:
+      - -s -w
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - 386
+      - amd64
+archives:
+  - format: binary
+    files:
+      - none*
+    replacements:
+      386: i386
+      amd64: x86_64
+release:
+  github:
+    owner: martinohmann
+    name: terraform-provider-site24x7
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'

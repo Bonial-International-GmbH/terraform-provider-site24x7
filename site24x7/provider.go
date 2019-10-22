@@ -1,25 +1,38 @@
 package site24x7
 
 import (
-	"net/http"
+	"os"
 
+	site24x7 "github.com/Bonial-International-GmbH/site24x7-go"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	log "github.com/sirupsen/logrus"
 )
 
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"authtoken": {
+			"oauth2_client_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("SITE24X7_AUTHTOKEN", nil),
-				Description: "site24x7 auth Account (https://www.site24x7.com/help/api/#authentication)",
+				DefaultFunc: schema.EnvDefaultFunc("SITE24X7_OAUTH2_CLIENT_ID", nil),
+				Description: "OAuth2 Client ID",
+			},
+			"oauth2_client_secret": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SITE24X7_OAUTH2_CLIENT_SECRET", nil),
+				Description: "OAuth2 Client Secret",
+			},
+			"oauth2_refresh_token": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SITE24X7_OAUTH2_REFRESH_TOKEN", nil),
+				Description: "OAuth2 Refresh Token",
 			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"site24x7_dns_monitor":     resourceSite24x7DnsMonitor(),
 			"site24x7_website_monitor": resourceSite24x7WebsiteMonitor(),
 			"site24x7_monitor_group":   resourceSite24x7MonitorGroup(),
 			"site24x7_action":          resourceSite24x7Action(),
@@ -30,24 +43,16 @@ func Provider() terraform.ResourceProvider {
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	h := make(http.Header)
-	h.Set("Authorization", "Zoho-authtoken "+d.Get("authtoken").(string))
-	return &http.Client{
-		Transport: &staticHeaderTransport{
-			base:   http.DefaultTransport,
-			header: h,
-		},
-	}, nil
-}
-
-type staticHeaderTransport struct {
-	base   http.RoundTripper
-	header http.Header
-}
-
-func (t *staticHeaderTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	for k, v := range t.header {
-		req.Header[k] = v
+	tfLog := os.Getenv("TF_LOG")
+	if tfLog == "DEBUG" || tfLog == "TRACE" {
+		log.SetLevel(log.DebugLevel)
 	}
-	return t.base.RoundTrip(req)
+
+	config := site24x7.Config{
+		ClientID:     d.Get("oauth2_client_id").(string),
+		ClientSecret: d.Get("oauth2_client_secret").(string),
+		RefreshToken: d.Get("oauth2_refresh_token").(string),
+	}
+
+	return site24x7.New(config), nil
 }

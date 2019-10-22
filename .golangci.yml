@@ -5,3 +5,8 @@ run:
 linters-settings:
   errcheck:
     ignore: github.com/hashicorp/terraform-plugin-sdk/helper/schema:Set
+linters:
+  enable:
+    - whitespace
+    - misspell
+    - goimports

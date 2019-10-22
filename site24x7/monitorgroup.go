@@ -1,13 +1,22 @@
 package site24x7
 
 import (
-	"bytes"
-	"encoding/json"
-	"log"
-	"net/http"
-
+	site24x7 "github.com/Bonial-International-GmbH/site24x7-go"
+	"github.com/Bonial-International-GmbH/site24x7-go/api"
+	apierrors "github.com/Bonial-International-GmbH/site24x7-go/api/errors"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
+
+var MonitorGroupSchema = map[string]*schema.Schema{
+	"display_name": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"description": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+}
 
 func resourceSite24x7MonitorGroup() *schema.Resource {
 	return &schema.Resource{
@@ -17,133 +26,88 @@ func resourceSite24x7MonitorGroup() *schema.Resource {
 		Delete: monitorGroupDelete,
 		Exists: monitorGroupExists,
 
-		Schema: map[string]*schema.Schema{
-			"display_name": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-
-			"description": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-		},
+		Schema: MonitorGroupSchema,
 	}
-}
-
-type MonitorGroup struct {
-	MonitorGroupID string `json:"group_id,omitempty"`
-	DisplayName    string `json:"display_name"`
-	Description    string `json:"description"`
 }
 
 func monitorGroupCreate(d *schema.ResourceData, meta interface{}) error {
-	return monitorGroupCreateOrUpdate(http.MethodPost, "https://www.site24x7.com/api/monitor_groups", http.StatusCreated, d, meta)
-}
+	client := meta.(site24x7.Client)
 
-func monitorGroupUpdate(d *schema.ResourceData, meta interface{}) error {
-	return monitorGroupCreateOrUpdate(http.MethodPut, "https://www.site24x7.com/api/monitor_groups/"+d.Id(), http.StatusOK, d, meta)
-}
+	monitorGroup := resourceDataToMonitorGroup(d)
 
-func monitorGroupCreateOrUpdate(method, url string, expectedResponseStatus int, d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*http.Client)
-
-	m := &MonitorGroup{
-		DisplayName: d.Get("display_name").(string),
-		Description: d.Get("description").(string),
-	}
-
-	body, err := json.Marshal(m)
+	monitorGroup, err := client.MonitorGroups().Create(monitorGroup)
 	if err != nil {
 		return err
 	}
-	log.Printf("group body: %s", body)
 
-	req, err := http.NewRequest(method, url, bytes.NewReader(body))
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != expectedResponseStatus {
-		return parseAPIError(resp.Body)
-	}
-
-	var apiResp struct {
-		Data struct {
-			GroupID string `json:"group_id"`
-		} `json:"data"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&apiResp); err != nil {
-		return err
-	}
-	d.SetId(apiResp.Data.GroupID)
+	d.SetId(monitorGroup.GroupID)
 
 	return nil
 }
 
 func monitorGroupRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*http.Client)
+	client := meta.(site24x7.Client)
 
-	var apiResp struct {
-		Data MonitorGroup `json:"data"`
-	}
-	if err := doGetRequest(client, "https://www.site24x7.com/api/monitor_groups/"+d.Id(), &apiResp); err != nil {
+	monitorGroup, err := client.MonitorGroups().Get(d.Id())
+	if err != nil {
 		return err
 	}
-	updateMonitorGroupResourceData(d, &apiResp.Data)
+
+	updateMonitorGroupResourceData(d, monitorGroup)
 
 	return nil
 }
 
-func updateMonitorGroupResourceData(d *schema.ResourceData, m *MonitorGroup) {
-	d.Set("display_name", m.DisplayName)
-	d.Set("description", m.Description)
+func monitorGroupUpdate(d *schema.ResourceData, meta interface{}) error {
+	client := meta.(site24x7.Client)
+
+	monitorGroup := resourceDataToMonitorGroup(d)
+
+	monitorGroup, err := client.MonitorGroups().Update(monitorGroup)
+	if err != nil {
+		return err
+	}
+
+	d.SetId(monitorGroup.GroupID)
+
+	return nil
 }
 
 func monitorGroupDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*http.Client)
+	client := meta.(site24x7.Client)
 
-	req, err := http.NewRequest(http.MethodDelete, "https://www.site24x7.com/api/monitor_groups/"+d.Id(), nil)
-	if err != nil {
-		return err
+	err := client.MonitorGroups().Delete(d.Id())
+	if apierrors.IsNotFound(err) {
+		return nil
 	}
 
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return parseAPIError(resp.Body)
-	}
-
-	return nil
+	return err
 }
 
 func monitorGroupExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	return fetchMonitorGroupExists(meta.(*http.Client), d.Id())
-}
+	client := meta.(site24x7.Client)
 
-func fetchMonitorGroupExists(client *http.Client, id string) (bool, error) {
-	var apiResp struct {
-		Data []MonitorGroup `json:"data"`
+	_, err := client.MonitorGroups().Get(d.Id())
+	if apierrors.IsNotFound(err) {
+		return false, nil
 	}
-	if err := doGetRequest(client, "https://www.site24x7.com/api/monitor_groups", &apiResp); err != nil {
+
+	if err != nil {
 		return false, err
 	}
-	for _, v := range apiResp.Data {
-		if v.MonitorGroupID == id {
-			return true, nil
-		}
-	}
 
-	return false, nil
+	return true, nil
+}
+
+func resourceDataToMonitorGroup(d *schema.ResourceData) *api.MonitorGroup {
+	return &api.MonitorGroup{
+		GroupID:     d.Id(),
+		DisplayName: d.Get("display_name").(string),
+		Description: d.Get("description").(string),
+	}
+}
+
+func updateMonitorGroupResourceData(d *schema.ResourceData, monitorGroup *api.MonitorGroup) {
+	d.Set("display_name", monitorGroup.DisplayName)
+	d.Set("description", monitorGroup.Description)
 }
