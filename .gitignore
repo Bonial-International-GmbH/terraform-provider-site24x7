@@ -1,5 +1,6 @@
 .cover
 .terraform
+/dist
 /vendor
 coverage.txt
 terraform-provider-site24x7
