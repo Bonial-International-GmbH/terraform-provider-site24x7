@@ -36,6 +36,8 @@ func TestWebsiteMonitorCreate(t *testing.T) {
 					ThresholdProfileID:    "012",
 					UseNameServer:         true,
 					UserGroupIDs:          []string{"123"},
+					CustomHeaders:         []api.Header{},
+					ActionIDs:             []api.ActionRef{},
 				}
 
 				c.FakeMonitors.On("Create", a).Return(a, nil).Once()
@@ -401,6 +403,8 @@ func TestResourceDataToWebsiteMonitor(t *testing.T) {
 				ThresholdProfileID:    "012",
 				UseNameServer:         true,
 				UserGroupIDs:          []string{"123"},
+				CustomHeaders:         []api.Header{},
+				ActionIDs:             []api.ActionRef{},
 			},
 		},
 		{
@@ -432,6 +436,8 @@ func TestResourceDataToWebsiteMonitor(t *testing.T) {
 				ThresholdProfileID:    "012",
 				UseNameServer:         true,
 				UserGroupIDs:          []string{"123"},
+				CustomHeaders:         []api.Header{},
+				ActionIDs:             []api.ActionRef{},
 			},
 		},
 		{
@@ -480,6 +486,8 @@ func TestResourceDataToWebsiteMonitor(t *testing.T) {
 				ThresholdProfileID:    "012",
 				UseNameServer:         true,
 				UserGroupIDs:          []string{"123"},
+				CustomHeaders:         []api.Header{},
+				ActionIDs:             []api.ActionRef{},
 			},
 		},
 		{
@@ -511,6 +519,8 @@ func TestResourceDataToWebsiteMonitor(t *testing.T) {
 				ThresholdProfileID:    "345",
 				UseNameServer:         true,
 				UserGroupIDs:          []string{"123"},
+				CustomHeaders:         []api.Header{},
+				ActionIDs:             []api.ActionRef{},
 			},
 		},
 		{
@@ -542,6 +552,8 @@ func TestResourceDataToWebsiteMonitor(t *testing.T) {
 				ThresholdProfileID:    "345",
 				UseNameServer:         true,
 				UserGroupIDs:          []string{"345"},
+				CustomHeaders:         []api.Header{},
+				ActionIDs:             []api.ActionRef{},
 			},
 		},
 	}

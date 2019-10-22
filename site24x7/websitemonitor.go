@@ -214,7 +214,6 @@ func websiteMonitorExists(d *schema.ResourceData, meta interface{}) (bool, error
 }
 
 func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client) (*api.Monitor, error) {
-	var customHeaders []api.Header
 	customHeaderMap := d.Get("custom_headers").(map[string]interface{})
 
 	keys := make([]string, 0, len(customHeaderMap))
@@ -224,8 +223,9 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client
 
 	sort.Strings(keys)
 
-	for _, k := range keys {
-		customHeaders = append(customHeaders, api.Header{Name: k, Value: customHeaderMap[k].(string)})
+	customHeaders := make([]api.Header, len(keys))
+	for i, k := range keys {
+		customHeaders[i] = api.Header{Name: k, Value: customHeaderMap[k].(string)}
 	}
 
 	var userGroupIDs []string
@@ -238,7 +238,6 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client
 		monitorGroups = append(monitorGroups, group.(string))
 	}
 
-	var actionRefs []api.ActionRef
 	actionMap := d.Get("actions").(map[string]interface{})
 
 	keys = make([]string, 0, len(actionMap))
@@ -248,16 +247,17 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client
 
 	sort.Strings(keys)
 
-	for _, k := range keys {
-		tmp, err := strconv.Atoi(k)
+	actionRefs := make([]api.ActionRef, len(keys))
+	for i, k := range keys {
+		status, err := strconv.Atoi(k)
 		if err != nil {
 			return nil, err
 		}
 
-		alertType := api.Status(tmp)
-		actionRef := api.ActionRef{ActionID: actionMap[k].(string), AlertType: alertType}
-
-		actionRefs = append(actionRefs, actionRef)
+		actionRefs[i] = api.ActionRef{
+			ActionID:  actionMap[k].(string),
+			AlertType: api.Status(status),
+		}
 	}
 
 	websiteMonitor := &api.Monitor{
