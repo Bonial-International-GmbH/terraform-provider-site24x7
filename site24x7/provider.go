@@ -1,9 +1,12 @@
 package site24x7
 
 import (
+	"os"
+
 	site24x7 "github.com/Bonial-International-GmbH/site24x7-go"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	log "github.com/sirupsen/logrus"
 )
 
 func Provider() terraform.ResourceProvider {
@@ -40,6 +43,11 @@ func Provider() terraform.ResourceProvider {
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+	tfLog := os.Getenv("TF_LOG")
+	if tfLog == "DEBUG" || tfLog == "TRACE" {
+		log.SetLevel(log.DebugLevel)
+	}
+
 	config := site24x7.Config{
 		ClientID:     d.Get("oauth2_client_id").(string),
 		ClientSecret: d.Get("oauth2_client_secret").(string),

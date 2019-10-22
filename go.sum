@@ -13,6 +13,10 @@ github.com/Bonial-International-GmbH/site24x7-go v0.0.0-20191010114601-2e6a1e4ef
 github.com/Bonial-International-GmbH/site24x7-go v0.0.0-20191010114601-2e6a1e4efcfd/go.mod h1:VlIGpD11eJjemyS+Rmh4pd9bhAwYuXFemVO+nL6OSqs=
 github.com/Bonial-International-GmbH/site24x7-go v0.0.0-20191011120600-568ee03b5b42 h1:Y9KbHsvVlxFO77eE4XcvvsSqHBJMJi2bty3f9hctKVs=
 github.com/Bonial-International-GmbH/site24x7-go v0.0.0-20191011120600-568ee03b5b42/go.mod h1:VlIGpD11eJjemyS+Rmh4pd9bhAwYuXFemVO+nL6OSqs=
+github.com/Bonial-International-GmbH/site24x7-go v0.0.0-20191022100119-4d3bb1fd76f1 h1:I/DXwMGJ/ydCvDm48XVYSQ4u/tCHFbVPMYg+jz/2OVE=
+github.com/Bonial-International-GmbH/site24x7-go v0.0.0-20191022100119-4d3bb1fd76f1/go.mod h1:VlIGpD11eJjemyS+Rmh4pd9bhAwYuXFemVO+nL6OSqs=
+github.com/Bonial-International-GmbH/site24x7-go v0.0.1 h1:51bzdUgtWlBfjZanVHCt5gn5fIlYSX/31OhZHjFgXBA=
+github.com/Bonial-International-GmbH/site24x7-go v0.0.1/go.mod h1:VlIGpD11eJjemyS+Rmh4pd9bhAwYuXFemVO+nL6OSqs=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/agext/levenshtein v1.2.1/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=
