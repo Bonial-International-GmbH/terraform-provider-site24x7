@@ -95,6 +95,10 @@ func TestActionDelete(t *testing.T) {
 	c.FakeITAutomations.On("Delete", "123").Return(nil).Once()
 
 	require.NoError(t, actionDelete(d, c))
+
+	c.FakeITAutomations.On("Delete", "123").Return(apierrors.NewStatusError(404, "not found")).Once()
+
+	require.NoError(t, actionDelete(d, c))
 }
 
 func TestActionExists(t *testing.T) {

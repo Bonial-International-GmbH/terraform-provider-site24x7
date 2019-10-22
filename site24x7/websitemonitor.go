@@ -190,7 +190,12 @@ func websiteMonitorUpdate(d *schema.ResourceData, meta interface{}) error {
 func websiteMonitorDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(site24x7.Client)
 
-	return client.Monitors().Delete(d.Id())
+	err := client.Monitors().Delete(d.Id())
+	if apierrors.IsNotFound(err) {
+		return nil
+	}
+
+	return err
 }
 
 func websiteMonitorExists(d *schema.ResourceData, meta interface{}) (bool, error) {

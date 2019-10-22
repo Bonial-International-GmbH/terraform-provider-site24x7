@@ -76,7 +76,12 @@ func monitorGroupUpdate(d *schema.ResourceData, meta interface{}) error {
 func monitorGroupDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(site24x7.Client)
 
-	return client.MonitorGroups().Delete(d.Id())
+	err := client.MonitorGroups().Delete(d.Id())
+	if apierrors.IsNotFound(err) {
+		return nil
+	}
+
+	return err
 }
 
 func monitorGroupExists(d *schema.ResourceData, meta interface{}) (bool, error) {
