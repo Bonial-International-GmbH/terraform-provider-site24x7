@@ -22,7 +22,7 @@ archives:
       amd64: x86_64
 release:
   github:
-    owner: martinohmann
+    owner: Bonial-International-GmbH
     name: terraform-provider-site24x7
 checksum:
   name_template: 'checksums.txt'
