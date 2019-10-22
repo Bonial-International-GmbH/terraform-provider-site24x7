@@ -299,6 +299,10 @@ func TestWebsiteMonitorDelete(t *testing.T) {
 	c.FakeMonitors.On("Delete", "123").Return(nil).Once()
 
 	require.NoError(t, websiteMonitorDelete(d, c))
+
+	c.FakeMonitors.On("Delete", "123").Return(apierrors.NewStatusError(404, "not found")).Once()
+
+	require.NoError(t, websiteMonitorDelete(d, c))
 }
 
 func TestWebsiteMonitorExists(t *testing.T) {

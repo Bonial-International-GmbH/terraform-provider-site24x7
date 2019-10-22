@@ -81,6 +81,10 @@ func TestMonitorGroupDelete(t *testing.T) {
 	c.FakeMonitorGroups.On("Delete", "123").Return(nil).Once()
 
 	require.NoError(t, monitorGroupDelete(d, c))
+
+	c.FakeMonitorGroups.On("Delete", "123").Return(apierrors.NewStatusError(404, "not found")).Once()
+
+	require.NoError(t, monitorGroupDelete(d, c))
 }
 
 func TestMonitorGroupExists(t *testing.T) {

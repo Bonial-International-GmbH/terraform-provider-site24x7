@@ -119,7 +119,12 @@ func actionUpdate(d *schema.ResourceData, meta interface{}) error {
 func actionDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(site24x7.Client)
 
-	return client.ITAutomations().Delete(d.Id())
+	err := client.ITAutomations().Delete(d.Id())
+	if apierrors.IsNotFound(err) {
+		return nil
+	}
+
+	return err
 }
 
 func actionExists(d *schema.ResourceData, meta interface{}) (bool, error) {
