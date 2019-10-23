@@ -17,7 +17,8 @@ build: ## build terraform-provider-site24x7
 
 .PHONY: install
 install: build ## install terraform-provider-site24x7
-	cp $(BINARY) $(GOPATH)/bin/
+	mkdir -p $(HOME)/.terraform.d/plugins
+	cp $(BINARY) $(HOME)/.terraform.d/plugins
 
 .PHONY: test
 test: ## run tests
