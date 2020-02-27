@@ -11,6 +11,17 @@ provider "site24x7" {
   // The refresh token will be looked up in the SITE24X7_OAUTH2_REFRESH_TOKEN
   // environment variable if the attribute is empty or omitted.
   oauth2_refresh_token = "${var.oauth2_refresh_token}"
+
+  // The minimum time to wait in seconds before retrying failed Site24x7 API requests.
+  retry_min_wait = 1
+
+  // The maximum time to wait in seconds before retrying failed Site24x7 API
+  // requests. This is the upper limit for the wait duration with exponential
+  // backoff.
+  retry_max_wait = 30
+
+  // Maximum number of Site24x7 API request retries to perform until giving up.
+  max_retries = 4
 }
 
 // IT Automation API doc: https://www.site24x7.com/help/api/#it-automation
