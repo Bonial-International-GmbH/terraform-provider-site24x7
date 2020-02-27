@@ -23,7 +23,8 @@ cd terraform-provider-site24x7
 make install
 ```
 
-This will build the `terraform-provider-site24x7` binary and install it into the `$GOPATH/bin` directory.
+This will build the `terraform-provider-site24x7` binary and install it into
+the `$HOME/.terraform.d/plugins` directory.
 
 Development
 -----------
