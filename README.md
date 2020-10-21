@@ -60,3 +60,16 @@ provider "site24x7" {
   oauth2_refresh_token = "${var.oauth2_refresh_token}"
 }
 ```
+
+Usage example with docker
+-------------------------
+
+Building
+```sh
+docker build -t terraform-provider-site24x7 .
+```
+
+Using (terraform plan)
+```sh
+docker run -it --rm -v $PWD:/data/src -e SITE24X7_OAUTH2_CLIENT_ID=$SITE24X7_OAUTH2_CLIENT_ID -e SITE24X7_OAUTH2_CLIENT_SECRET=$SITE24X7_OAUTH2_CLIENT_SECRET -e SITE24X7_OAUTH2_REFRESH_TOKEN=$SITE24X7_OAUTH2_REFRESH_TOKEN -w /data/src terraform-provider-site24x7:latest plan
+```
