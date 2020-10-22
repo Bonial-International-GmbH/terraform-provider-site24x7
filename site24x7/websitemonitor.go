@@ -124,6 +124,11 @@ var WebsiteMonitorSchema = map[string]*schema.Schema{
 		Optional: true,
 		Default:  true,
 	},
+	"up_status_codes": {
+		Type:     schema.TypeString,
+		Optional: true,
+		Default:  "",
+	},
 }
 
 func resourceSite24x7WebsiteMonitor() *schema.Resource {
@@ -283,6 +288,7 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client
 		UserGroupIDs:          userGroupIDs,
 		ActionIDs:             actionRefs,
 		UseNameServer:         d.Get("use_name_server").(bool),
+		UpStatusCodes:         d.Get("up_status_codes").(string),
 	}
 
 	if _, ok := d.GetOk("match_regex_value"); ok {
@@ -391,4 +397,5 @@ func updateWebsiteMonitorResourceData(d *schema.ResourceData, monitor *api.Monit
 
 	d.Set("actions", actions)
 	d.Set("use_name_server", monitor.UseNameServer)
+	d.Set("up_status_codes", monitor.UpStatusCodes)
 }
