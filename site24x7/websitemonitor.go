@@ -133,6 +133,9 @@ func resourceSite24x7WebsiteMonitor() *schema.Resource {
 		Update: websiteMonitorUpdate,
 		Delete: websiteMonitorDelete,
 		Exists: websiteMonitorExists,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: WebsiteMonitorSchema,
 	}
