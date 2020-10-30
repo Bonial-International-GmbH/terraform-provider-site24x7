@@ -21,6 +21,8 @@ github.com/Bonial-International-GmbH/site24x7-go v0.0.3 h1:dxJg9+YNE4/n3+s161voo
 github.com/Bonial-International-GmbH/site24x7-go v0.0.3/go.mod h1:t8PPOZgtwUCU9xodDhmt5ATqTHkIQgyzCkgjze7zz90=
 github.com/Bonial-International-GmbH/site24x7-go v0.0.4 h1:QBhopy/qCoqmuLFkCa6y3qgg0m1EC5qpUecLQrqTLOM=
 github.com/Bonial-International-GmbH/site24x7-go v0.0.4/go.mod h1:t8PPOZgtwUCU9xodDhmt5ATqTHkIQgyzCkgjze7zz90=
+github.com/Bonial-International-GmbH/site24x7-go v0.0.5 h1:9XRcZ/35UCiclcbyxoDEM9q+UZiVcSE5MQo2h72ccLY=
+github.com/Bonial-International-GmbH/site24x7-go v0.0.5/go.mod h1:t8PPOZgtwUCU9xodDhmt5ATqTHkIQgyzCkgjze7zz90=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/agext/levenshtein v1.2.1/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=
