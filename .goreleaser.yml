@@ -6,13 +6,24 @@ builds:
     ldflags:
       - -s -w
     env:
+      # goreleaser does not work with CGO, it could also complicate
+      # usage by users in CI/CD systems like Terraform Cloud where
+      # they are unable to install libraries.
       - CGO_ENABLED=0
     goos:
+      - freebsd
+      - windows
       - linux
       - darwin
     goarch:
-      - 386
       - amd64
+      - '386'
+      - arm
+      - arm64
+    ignore:
+      - goos: darwin
+        goarch: '386'
+    binary: '{{ .ProjectName }}_v{{ .Version }}'
 archives:
   - format: binary
     files:
@@ -20,6 +31,24 @@ archives:
     replacements:
       386: i386
       amd64: x86_64
+archives:
+- format: zip
+  name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+checksum:
+  name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
+  algorithm: sha256
+signs:
+  - artifacts: checksum
+    args:
+      # if you are using this in a GitHub action or some other automated pipeline, you 
+      # need to pass the batch flag to indicate its not interactive.
+      - "--batch"
+      - "--local-user"
+      - "{{ .Env.GPG_FINGERPRINT }}" # set this environment variable for your signing key
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"
 release:
   github:
     owner: Bonial-International-GmbH
