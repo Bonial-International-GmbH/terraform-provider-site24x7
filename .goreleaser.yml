@@ -2,30 +2,39 @@
 project_name: terraform-provider-site24x7
 builds:
   - main: ./main.go
-    binary: terraform-provider-site24x7
     ldflags:
       - -s -w
     env:
       - CGO_ENABLED=0
     goos:
+      - windows
       - linux
       - darwin
     goarch:
       - 386
       - amd64
 archives:
-  - format: binary
-    files:
-      - none*
-    replacements:
-      386: i386
-      amd64: x86_64
+- format: zip
+  name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+checksum:
+  name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
+  algorithm: sha256
+signs:
+  - artifacts: checksum
+    args:
+      # if you are using this in a GitHub action or some other automated pipeline, you 
+      # need to pass the batch flag to indicate its not interactive.
+      - "--batch"
+      - "--local-user"
+      - "{{ .Env.GPG_FINGERPRINT }}" # set this environment variable for your signing key
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"
 release:
   github:
     owner: Bonial-International-GmbH
     name: terraform-provider-site24x7
-checksum:
-  name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-next"
 changelog:
