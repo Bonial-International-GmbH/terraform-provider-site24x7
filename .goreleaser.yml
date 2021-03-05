@@ -2,7 +2,6 @@
 project_name: terraform-provider-site24x7
 builds:
   - main: ./main.go
-    binary: terraform-provider-site24x7
     ldflags:
       - -s -w
     env:
@@ -11,7 +10,6 @@ builds:
       # they are unable to install libraries.
       - CGO_ENABLED=0
     goos:
-      - freebsd
       - windows
       - linux
       - darwin
@@ -24,13 +22,6 @@ builds:
       - goos: darwin
         goarch: '386'
     binary: '{{ .ProjectName }}_v{{ .Version }}'
-archives:
-  - format: binary
-    files:
-      - none*
-    replacements:
-      386: i386
-      amd64: x86_64
 archives:
 - format: zip
   name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
@@ -53,10 +44,6 @@ release:
   github:
     owner: Bonial-International-GmbH
     name: terraform-provider-site24x7
-checksum:
-  name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ .Tag }}-next"
 changelog:
   sort: asc
   filters:
