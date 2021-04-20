@@ -50,6 +50,16 @@ func Provider() terraform.ResourceProvider {
 				Default:     4,
 				Description: "Maximum number of retries for Site24x7 API errors until giving up",
 			},
+			"api_base_url": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Site24x7 API base url to use.",
+			},
+			"token_url": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Site24x7 OAuth token url to use.",
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -72,6 +82,8 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		ClientID:     d.Get("oauth2_client_id").(string),
 		ClientSecret: d.Get("oauth2_client_secret").(string),
 		RefreshToken: d.Get("oauth2_refresh_token").(string),
+		APIBaseURL:   d.Get("api_base_url").(string),
+		TokenURL:     d.Get("token_url").(string),
 		RetryConfig: &backoff.RetryConfig{
 			MinWait:    time.Duration(d.Get("retry_min_wait").(int)) * time.Second,
 			MaxWait:    time.Duration(d.Get("retry_max_wait").(int)) * time.Second,

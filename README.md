@@ -58,5 +58,14 @@ provider "site24x7" {
   // The refresh token will be looked up in the SITE24X7_OAUTH2_REFRESH_TOKEN
   // environment variable if the attribute is empty or omitted.
   oauth2_refresh_token = "${var.oauth2_refresh_token}"
+
+  // Specify the following configuration options if you want to use
+  // some other Site24x7 data center than the default US one. These
+  // must correspond to the data center from which you have obtained your
+  // OAuth client credentials and refresh token.
+
+  // Use European data center for API and tokens
+  api_base_url = "https://www.site24x7.eu/api"
+  token_url = "https://accounts.zoho.eu/oauth/v2/token"
 }
 ```

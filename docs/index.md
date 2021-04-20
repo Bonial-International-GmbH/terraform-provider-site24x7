@@ -57,6 +57,15 @@ provider "site24x7" {
 
   // Maximum number of Site24x7 API request retries to perform until giving up.
   max_retries = 4
+
+  // Site24x7 API base URL to use. Used to select the desired data center.
+  // See https://www.site24x7.com/help/api/#introduction
+  api_base_url = "https://www.site24x7.com/api"
+
+  // Site24x7 token URL to use. Used to select the desired data center.
+  // See https://www.site24x7.com/help/api/#authentication
+  // NOTE: This needs to be configured to match the API base URL domain.
+  token_url = "https://accounts.zoho.com/oauth/v2/token"
 }
 
 // IT Automation API doc: https://www.site24x7.com/help/api/#it-automation
@@ -222,6 +231,8 @@ resource "site24x7_website_monitor" "website_monitor" {
 
 ### Optional
 
+- **api_base_url** (String) Site24x7 API base url to use.
 - **max_retries** (Number) Maximum number of retries for Site24x7 API errors until giving up
 - **retry_max_wait** (Number) Maximum wait time in seconds before retrying failed API requests (exponential backoff).
 - **retry_min_wait** (Number) Minimum wait time in seconds before retrying failed API requests.
+- **token_url** (String) Site24x7 OAuth token url to use.
