@@ -1,7 +1,8 @@
 .DEFAULT_GOAL := help
 
-GOLANGCI_LINT_VERSION ?= v1.19.1
-BINARY := terraform-provider-site24x7
+BINARY     := terraform-provider-site24x7
+TEST_FLAGS ?= -race
+PKGS       ?= $(shell go list ./... | grep -v /vendor/)
 
 .PHONY: help
 help:
@@ -22,14 +23,17 @@ install: build ## install terraform-provider-site24x7
 
 .PHONY: test
 test: ## run tests
-	go test -race -tags="$(TAGS)" $$(go list ./... | grep -v /vendor/)
+	go test $(TEST_FLAGS) $(PKGS)
+
+.PHONY: vet
+vet: ## run go vet
+	go vet $(PKGS)
 
 .PHONY: coverage
 coverage: ## generate code coverage
-	scripts/coverage
+	go test $(TEST_FLAGS) -covermode=atomic -coverprofile=coverage.txt $(PKGS)
+	go tool cover -func=coverage.txt
 
 .PHONY: lint
 lint: ## run golangci-lint
-	command -v golangci-lint > /dev/null 2>&1 || \
-	  curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin $(GOLANGCI_LINT_VERSION)
 	golangci-lint run

@@ -1,0 +1,42 @@
+---
+name: build
+on:
+  push:
+    branches:
+      - 'master'
+    tags:
+      - 'v*'
+  pull_request:
+jobs:
+  build:
+    strategy:
+      matrix:
+        go-version: [1.15.x, 1.16.x]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
+      - name: Setup
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Cache go modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-${{ matrix.go-version }}-
+      - name: Download go modules
+        run: go mod download
+      - name: Run go test
+        run: make coverage
+      - name: Run go vet
+        run: make vet
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v2.5.2
+        with:
+          version: latest
+          skip-pkg-cache: true
+          skip-build-cache: true
