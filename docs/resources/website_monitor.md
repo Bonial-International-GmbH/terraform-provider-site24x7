@@ -46,4 +46,11 @@ description: |-
 - **user_agent** (String)
 - **user_group_ids** (List of String)
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# Import website monitor by ID
+terraform import site24x7_website_monitor.monitor 79730000012345678
+```
