@@ -5,6 +5,8 @@ metadata:
   name: terraform-provider-site24x7
   description:
     An open source terrafrom provider for site24x7
+  annotations:
+    backstage.io/techdocs-ref: dir:../README.md
   links:
     - url: https://site24x7.com
     - url: https://registry.terraform.io/providers/Bonial-International-GmbH/site24x7/latest
