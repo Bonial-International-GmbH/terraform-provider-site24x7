@@ -1,4 +1,4 @@
-site_name: 'terraform sitr24x7'
+site_name: 'terraform site24x7'
 site_description: 'An open source terrafrom provider for site24x7'
 
 plugins:
