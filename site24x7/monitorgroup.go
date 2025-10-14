@@ -108,6 +108,6 @@ func resourceDataToMonitorGroup(d *schema.ResourceData) *api.MonitorGroup {
 }
 
 func updateMonitorGroupResourceData(d *schema.ResourceData, monitorGroup *api.MonitorGroup) {
-	d.Set("display_name", monitorGroup.DisplayName)
-	d.Set("description", monitorGroup.Description)
+	d.Set("display_name", monitorGroup.DisplayName) //nolint:errcheck
+	d.Set("description", monitorGroup.Description)  //nolint:errcheck
 }

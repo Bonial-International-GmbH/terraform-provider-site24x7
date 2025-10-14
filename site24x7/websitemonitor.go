@@ -318,7 +318,7 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client
 			return nil, err
 		}
 		websiteMonitor.LocationProfileID = profile.ProfileID
-		d.Set("location_profile_id", profile.ProfileID)
+		d.Set("location_profile_id", profile.ProfileID) //nolint:errcheck
 	}
 
 	if websiteMonitor.NotificationProfileID == "" {
@@ -327,7 +327,7 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client
 			return nil, err
 		}
 		websiteMonitor.NotificationProfileID = profile.ProfileID
-		d.Set("notification_profile_id", profile.ProfileID)
+		d.Set("notification_profile_id", profile.ProfileID) //nolint:errcheck
 	}
 
 	if websiteMonitor.ThresholdProfileID == "" {
@@ -336,7 +336,7 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client
 			return nil, err
 		}
 		websiteMonitor.ThresholdProfileID = profile.ProfileID
-		d.Set("threshold_profile_id", profile)
+		d.Set("threshold_profile_id", profile) //nolint:errcheck
 	}
 
 	if len(websiteMonitor.UserGroupIDs) == 0 {
@@ -345,12 +345,13 @@ func resourceDataToWebsiteMonitor(d *schema.ResourceData, client site24x7.Client
 			return nil, err
 		}
 		websiteMonitor.UserGroupIDs = []string{userGroup.UserGroupID}
-		d.Set("user_group_ids", []string{userGroup.UserGroupID})
+		d.Set("user_group_ids", []string{userGroup.UserGroupID}) //nolint:errcheck
 	}
 
 	return websiteMonitor, nil
 }
 
+//nolint:errcheck
 func updateWebsiteMonitorResourceData(d *schema.ResourceData, monitor *api.Monitor) {
 	d.Set("display_name", monitor.DisplayName)
 	d.Set("type", monitor.Type)

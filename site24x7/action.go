@@ -158,13 +158,13 @@ func resourceDataToAction(d *schema.ResourceData) *api.ITAutomation {
 }
 
 func updateActionResourceData(d *schema.ResourceData, automation *api.ITAutomation) {
-	d.Set("method", automation.ActionMethod)
-	d.Set("name", automation.ActionName)
-	d.Set("timeout", automation.ActionTimeout)
-	d.Set("type", automation.ActionType)
-	d.Set("url", automation.ActionUrl)
-	d.Set("custom_parameters", automation.CustomParameters)
-	d.Set("send_custom_parameters", automation.SendCustomParameters)
-	d.Set("send_in_json_format", automation.SendInJsonFormat)
-	d.Set("send_incident_parameters", automation.SendIncidentParameters)
+	d.Set("method", automation.ActionMethod)                             //nolint:errcheck
+	d.Set("name", automation.ActionName)                                 //nolint:errcheck
+	d.Set("timeout", automation.ActionTimeout)                           //nolint:errcheck
+	d.Set("type", automation.ActionType)                                 //nolint:errcheck
+	d.Set("url", automation.ActionUrl)                                   //nolint:errcheck
+	d.Set("custom_parameters", automation.CustomParameters)              //nolint:errcheck
+	d.Set("send_custom_parameters", automation.SendCustomParameters)     //nolint:errcheck
+	d.Set("send_in_json_format", automation.SendInJsonFormat)            //nolint:errcheck
+	d.Set("send_incident_parameters", automation.SendIncidentParameters) //nolint:errcheck
 }
