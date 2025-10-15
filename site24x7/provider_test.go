@@ -24,5 +24,6 @@ func TestProvider(t *testing.T) {
 }
 
 func TestProvider_impl(t *testing.T) {
+	//nolint:staticcheck
 	var _ terraform.ResourceProvider = Provider()
 }
