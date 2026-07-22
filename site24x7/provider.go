@@ -66,6 +66,7 @@ func Provider() terraform.ResourceProvider {
 			"site24x7_website_monitor": resourceSite24x7WebsiteMonitor(),
 			"site24x7_monitor_group":   resourceSite24x7MonitorGroup(),
 			"site24x7_action":          resourceSite24x7Action(),
+			"site24x7_user":            resourceSite24x7User(),
 		},
 
 		ConfigureFunc: providerConfigure,
